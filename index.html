@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Репер Кликер</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Фон с слоями -->
+        <div class="background-layer" id="backgroundLayer"></div>
+        <div class="money-layer" id="moneyLayer"></div>
+        <div class="level-detail-layer" id="levelDetailLayer"></div>
+
+        <!-- Основной контент -->
+        <div class="content">
+            <!-- Заголовок -->
+            <div class="header">
+                <div class="level-badge" id="levelBadge">ШКОЛЬНИК</div>
+                <div class="fame-display" id="fameDisplay">0</div>
+            </div>
+
+            <!-- Область кликов -->
+            <div class="click-area" id="clickArea">
+                <div class="equipment-image" id="equipmentImage"></div>
+                <div class="click-text">ЗАПИСАТЬ ТРЕК</div>
+            </div>
+
+            <!-- Статистика -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">ДЕНЬГИ</div>
+                    <div class="stat-value" id="moneyValue">0 ₽</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">ТРУШНОСТЬ</div>
+                    <div class="stat-value" id="credValue">30%</div>
+                </div>
+            </div>
+
+            <!-- Вкладки -->
+            <div class="tabs">
+                <button class="tab-button active" data-tab="boosts">БУСТЫ</button>
+                <button class="tab-button" data-tab="fits">ФИТЫ</button>
+                <button class="tab-button" data-tab="casino">КАЗИНО</button>
+                <button class="tab-button" data-tab="stats">СТАТЫ</button>
+            </div>
+
+            <!-- Контент вкладок -->
+            <div class="tab-content">
+                <!-- Бусты -->
+                <div id="boosts" class="tab-panel active">
+                    <div class="boost-list" id="boostList"></div>
+                </div>
+
+                <!-- Фиты -->
+                <div id="fits" class="tab-panel">
+                    <div class="fits-container" id="fitsContainer"></div>
+                </div>
+
+                <!-- Казино -->
+                <div id="casino" class="tab-panel">
+                    <div class="casino-message">СКОРО...</div>
+                </div>
+
+                <!-- Статистика -->
+                <div id="stats" class="tab-panel">
+                    <div class="stats-info">
+                        <div class="stat-line">
+                            <span>Уровень:</span>
+                            <span id="statsLevel">ШКОЛЬНИК</span>
+                        </div>
+                        <div class="stat-line">
+                            <span>Всего треков:</span>
+                            <span id="totalTracks">0</span>
+                        </div>
+                        <div class="stat-line">
+                            <span>Пассивный доход:</span>
+                            <span id="passiveIncome">0 ₽/час</span>
+                        </div>
+                        <div class="stat-line">
+                            <span>Куплено фитов:</span>
+                            <span id="fitsCount">0</span>
+                        </div>
+                        <div class="stat-line">
+                            <span>Куплено бустов:</span>
+                            <span id="boostsCount">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>

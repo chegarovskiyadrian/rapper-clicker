@@ -1,0 +1,385 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background: #0a0a0a;
+    color: white;
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+.container {
+    position: relative;
+    max-width: 400px;
+    margin: 0 auto;
+    min-height: 100vh;
+}
+
+/* Слои фона */
+.background-layer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('images/background.png');
+    background-size: cover;
+    background-position: center;
+    z-index: -3;
+}
+
+.money-layer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 30%;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: bottom;
+    z-index: -2;
+    opacity: 0.8;
+}
+
+.level-detail-layer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    z-index: -1;
+    opacity: 0.6;
+}
+
+.content {
+    position: relative;
+    z-index: 1;
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.7);
+    min-height: 100vh;
+}
+
+/* Заголовок */
+.header {
+    text-align: center;
+    margin-bottom: 20px;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    border: 1px solid rgba(100, 150, 255, 0.3);
+}
+
+.level-badge {
+    display: inline-block;
+    background: linear-gradient(45deg, #4a90e2, #00d4ff);
+    color: white;
+    padding: 8px 20px;
+    border-radius: 25px;
+    font-weight: bold;
+    font-size: 16px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+}
+
+.fame-display {
+    font-size: 32px;
+    font-weight: bold;
+    color: #00d4ff;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+/* Область кликов */
+.click-area {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 30px 20px;
+    text-align: center;
+    margin-bottom: 20px;
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.2s;
+    border: 2px solid transparent;
+    position: relative;
+    overflow: hidden;
+}
+
+.click-area:active {
+    transform: scale(0.98);
+    background: rgba(255, 255, 255, 0.15);
+    border-color: #00d4ff;
+}
+
+.equipment-image {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 15px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-image: url('images/equipment/phone.png');
+}
+
+.click-text {
+    font-size: 20px;
+    font-weight: bold;
+    color: #00d4ff;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Статистика */
+.stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.stat-card {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 15px 10px;
+    border-radius: 12px;
+    text-align: center;
+    border: 1px solid rgba(100, 150, 255, 0.3);
+}
+
+.stat-label {
+    font-size: 12px;
+    opacity: 0.8;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.stat-value {
+    font-size: 18px;
+    font-weight: bold;
+    color: #00d4ff;
+}
+
+/* Вкладки */
+.tabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 5px;
+    margin-bottom: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 4px;
+    border: 1px solid rgba(100, 150, 255, 0.3);
+}
+
+.tab-button {
+    padding: 12px 8px;
+    background: none;
+    border: none;
+    color: white;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-size: 11px;
+}
+
+.tab-button.active {
+    background: #4a90e2;
+    color: white;
+}
+
+.tab-panel {
+    display: none;
+}
+
+.tab-panel.active {
+    display: block;
+}
+
+/* Бусты */
+.boost-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.boost-item {
+    background: rgba(255, 255, 255, 0.08);
+    padding: 15px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1px solid rgba(100, 150, 255, 0.2);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.boost-item:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: #00d4ff;
+}
+
+.boost-item:active {
+    transform: scale(0.98);
+}
+
+.boost-item.cant-afford {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.boost-info {
+    flex: 1;
+}
+
+.boost-name {
+    font-weight: bold;
+    font-size: 14px;
+    margin-bottom: 4px;
+    color: #00d4ff;
+}
+
+.boost-effect {
+    font-size: 12px;
+    opacity: 0.8;
+}
+
+.boost-price {
+    color: #00d4ff;
+    font-weight: bold;
+    font-size: 14px;
+    margin-left: 10px;
+}
+
+/* Фиты */
+.fits-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.fit-item {
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 15px;
+    text-align: center;
+    border: 1px solid rgba(100, 150, 255, 0.2);
+    transition: all 0.2s;
+}
+
+.fit-item.purchased {
+    background: rgba(74, 144, 226, 0.2);
+    border-color: #4a90e2;
+}
+
+.fit-item.cant-afford {
+    opacity: 0.5;
+}
+
+.fit-image {
+    width: 60px;
+    height: 60px;
+    border-radius: 8px;
+    margin: 0 auto 8px;
+    background-size: cover;
+    background-position: center;
+    border: 1px solid rgba(100, 150, 255, 0.3);
+}
+
+.fit-name {
+    font-weight: bold;
+    font-size: 12px;
+    margin-bottom: 5px;
+    color: #00d4ff;
+}
+
+.fit-requirements {
+    font-size: 10px;
+    opacity: 0.8;
+    margin-bottom: 8px;
+    min-height: 30px;
+}
+
+.fit-price {
+    color: #00d4ff;
+    font-weight: bold;
+    font-size: 12px;
+    margin-bottom: 8px;
+}
+
+.buy-fit-btn {
+    background: #4a90e2;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    cursor: pointer;
+    width: 100%;
+    transition: all 0.2s;
+}
+
+.buy-fit-btn:disabled {
+    background: #666;
+    cursor: not-allowed;
+}
+
+.buy-fit-btn:active:not(:disabled) {
+    transform: scale(0.95);
+}
+
+/* Казино */
+.casino-message {
+    text-align: center;
+    padding: 40px 20px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    font-size: 18px;
+    color: #00d4ff;
+}
+
+/* Статистика */
+.stats-info {
+    background: rgba(255, 255, 255, 0.08);
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid rgba(100, 150, 255, 0.3);
+}
+
+.stat-line {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid rgba(100, 150, 255, 0.2);
+}
+
+.stat-line:last-child {
+    margin-bottom: 0;
+    border-bottom: none;
+}
+
+/* Уведомления */
+.notification {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #4a90e2;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    z-index: 1000;
+    font-weight: bold;
+    text-align: center;
+    max-width: 300px;
+}
