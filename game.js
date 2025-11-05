@@ -1,5 +1,13 @@
 // game.js - ПОЛНОСТЬЮ ИСПРАВЛЕННЫЙ КОД
+// Инициализация Telegram Web App
+const tg = window.Telegram.WebApp;
 
+function initTelegram() {
+    if (tg.initData) {
+        tg.expand();
+        tg.enableClosingConfirmation();
+    }
+}
 // Игровое состояние
 let gameState = {
     fame: 0,
@@ -99,6 +107,7 @@ const fits = {
 
 // Основные функции игры
 function initGame() {
+    initTelegram(); // Добавь эту строку ПЕРВОЙ
     loadGameState();
     setupEventListeners();
     updateDisplay();
@@ -560,4 +569,5 @@ function loadGameState() {
 }
 
 // Запуск игры
+
 document.addEventListener('DOMContentLoaded', initGame);
