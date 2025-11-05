@@ -1,5 +1,5 @@
 // Инициализация Telegram Web App
-const tg = window.Telegram.WebApp;
+const tg = window.Telegram?.WebApp;
 
 // Игровое состояние
 let gameState = {
@@ -11,9 +11,7 @@ let gameState = {
     boosts: {
         equipment: [],
         advertising: [],
-        clothing: [],
-        flex: [],
-        experimental: []
+        clothing: []
     },
     totalTracks: 0,
     purchasedFits: [],
@@ -25,62 +23,32 @@ let gameState = {
 const levels = [
     { name: "ШКОЛЬНИК", minFame: 0, maxFame: 5000, moneyReward: 500 },
     { name: "САУНДКЛАУД", minFame: 5000, maxFame: 25000, moneyReward: 2000 },
-    { name: "ТИКТОК", minFame: 25000, maxFame: 100000, moneyReward: 8000 },
-    { name: "МАССОВЫЙ", minFame: 100000, maxFame: 500000, moneyReward: 25000 },
-    { name: "ЛЕГЕНДА", minFame: 500000, maxFame: 2000000, moneyReward: 80000 }
+    { name: "ТИКТОК", minFame: 25000, maxFame: 100000, moneyReward: 8000 }
 ];
 
 // Система бустов
 const boosts = {
     equipment: [
         { id: "usb_mic", name: "USB микрофон", price: 500, effect: "+2 известности", famePerClick: 2, image: "usb_mic.png" },
-        { id: "pro_mic", name: "Улучшенный микрофон", price: 2000, effect: "+5 известности", famePerClick: 5, image: "pro_mic.png" },
-        { id: "basic_gear", name: "Начальная аппаратура", price: 8000, effect: "+12 известности", famePerClick: 12, image: "basic_gear.png" },
-        { id: "medium_gear", name: "Средняя аппаратура", price: 25000, effect: "+25 известности", famePerClick: 25, image: "medium_gear.png" },
-        { id: "advanced_gear", name: "Высшая аппаратура", price: 80000, effect: "+50 известности", famePerClick: 50, image: "advanced_gear.png" },
-        { id: "studio1", name: "Дешевая студия", price: 200000, effect: "+100 известности", famePerClick: 100, image: "studio1.png" },
-        { id: "studio2", name: "Нормальная студия", price: 500000, effect: "+200 известности", famePerClick: 200, image: "studio2.png" },
-        { id: "studio3", name: "Дорогая студия", price: 1200000, effect: "+400 известности", famePerClick: 400, image: "studio3.png" }
+        { id: "pro_mic", name: "Улучшенный микрофон", price: 2000, effect: "+5 известности", famePerClick: 5, image: "pro_mic.png" }
     ],
     
     advertising: [
-        { id: "flyers", name: "Листовки", price: 300, effect: "2 пальца", fingers: 2 },
-        { id: "tiktok", name: "ТикТок", price: 1500, effect: "3 пальца", fingers: 3 },
-        { id: "telegram", name: "Telegram", price: 6000, effect: "4 пальца", fingers: 4 },
-        { id: "ubivau", name: "Убиваю БПМ", price: 20000, effect: "5 пальцев", fingers: 5 },
-        { id: "everywhere", name: "Реклама везде", price: 100000, effect: "10 пальцев", fingers: 10 }
+        { id: "flyers", name: "Листовки", price: 300, effect: "2 пальца", fingers: 2 }
     ],
     
     clothing: [
-        { id: "shirt", name: "Школьная рубашка", price: 400, effect: "1.2x трушность", credMultiplier: 1.2 },
-        { id: "campus", name: "Кампусы с мехом", price: 1800, effect: "1.5x трушность", credMultiplier: 1.5 },
-        { id: "ricki", name: "Рики с вб", price: 7000, effect: "2.0x трушность", credMultiplier: 2.0 },
-        { id: "adidas", name: "Спорткостюм адидас", price: 22000, effect: "3.0x трушность", credMultiplier: 3.0 },
-        { id: "phresh", name: "Авито phreshboyswag", price: 70000, effect: "5.0x трушность", credMultiplier: 5.0 },
-        { id: "china", name: "Одежда с китая", price: 180000, effect: "8.0x трушность", credMultiplier: 8.0 },
-        { id: "normal", name: "Нормальная одежда", price: 450000, effect: "12.0x трушность", credMultiplier: 12.0 },
-        { id: "dlt", name: "Одежда с ДЛТ", price: 1000000, effect: "20.0x трушность", credMultiplier: 20.0 },
-        { id: "icon", name: "Икона стиля", price: 2500000, effect: "35.0x трушность", credMultiplier: 35.0 }
+        { id: "shirt", name: "Школьная рубашка", price: 400, effect: "1.2x трушность", credMultiplier: 1.2 }
     ]
 };
 
-// Система фитов - ПРОСТАЯ ВЕРСИЯ ДЛЯ ТЕСТА
+// Система фитов
 const fits = {
     1: [
         { id: "vasya", name: "Вася одноклассник", image: "1/h_васяодноклассник.jpg", 
           requirements: { streetCred: 0, price: 0 }, effects: { fame: 500, streetCred: 2, income: 500 } },
         { id: "carrystaff", name: "CarryStaff", image: "1/h_carrystaff.jpg",
-          requirements: { streetCred: 20, price: 2000 }, effects: { fame: 2000, streetCred: 5, income: 2000 } },
-        { id: "kostyapetux", name: "kostyapetux123", image: "1/h_kostyapetux123.jpg",
-          requirements: { streetCred: 0, price: 2000 }, effects: { fame: 1000, streetCred: 3, income: 1000 } },
-        { id: "telegram_type", name: "Тип из телеграма", image: "1/типизтелеграма.jpg",
-          requirements: { streetCred: 20, price: 0 }, effects: { fame: 1000, streetCred: 3, income: 1000 } }
-    ],
-    2: [
-        { id: "davidblunt", name: "David Blunt", image: "2/h_davidblunt.jpg",
-          requirements: { streetCred: 50, price: 25000 }, effects: { fame: 3000, streetCred: 4, income: 4000 } },
-        { id: "maxsonmadrid", name: "МаксонМадрид", image: "2/h_максонмадрид.jpg",
-          requirements: { streetCred: 20, price: 2000 }, effects: { fame: 4000, streetCred: 3, income: 2000 } }
+          requirements: { streetCred: 20, price: 2000 }, effects: { fame: 2000, streetCred: 5, income: 2000 } }
     ]
 };
 
@@ -94,28 +62,41 @@ function initGame() {
     renderFits();
     startPassiveIncome();
     updateEquipmentImage();
-    updateBackgroundLayers();
 }
 
 function initTelegram() {
-    if (typeof tg !== 'undefined' && tg.initData) {
+    if (tg) {
         tg.expand();
         tg.enableClosingConfirmation();
     }
 }
 
+// ИСПРАВЛЕННЫЕ ОБРАБОТЧИКИ ДЛЯ TELEGRAM
 function setupEventListeners() {
     const clickArea = document.getElementById('clickArea');
     if (clickArea) {
-        clickArea.addEventListener('click', clickSound);
-        clickArea.addEventListener('touchstart', clickSound, { passive: true });
+        // Для телефонов и компьютеров
+        clickArea.addEventListener('click', handleClick);
+        clickArea.addEventListener('touchstart', handleClick, { passive: true });
     }
     
+    // Обработчики для вкладок
     document.querySelectorAll('.tab-button').forEach(button => {
-        button.addEventListener('click', function() {
-            openTab(this.dataset.tab);
-        });
+        button.addEventListener('click', handleTabClick);
+        button.addEventListener('touchstart', handleTabClick, { passive: true });
     });
+}
+
+function handleClick(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    clickSound();
+}
+
+function handleTabClick(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    openTab(this.dataset.tab);
 }
 
 function clickSound() {
@@ -146,7 +127,6 @@ function checkLevelUp() {
         showMessage('НОВЫЙ УРОВЕНЬ: ' + newLevel.name);
         updateDisplay();
         renderFits();
-        updateBackgroundLayers();
         saveGameState();
     }
 }
@@ -167,20 +147,12 @@ function renderBoosts() {
     
     container.innerHTML = '';
     
-    const nextEquipment = getNextBoost('equipment');
-    if (nextEquipment) {
-        container.appendChild(createBoostElement(nextEquipment, 'equipment'));
-    }
-    
-    const nextAdvertising = getNextBoost('advertising');
-    if (nextAdvertising) {
-        container.appendChild(createBoostElement(nextAdvertising, 'advertising'));
-    }
-    
-    const nextClothing = getNextBoost('clothing');
-    if (nextClothing) {
-        container.appendChild(createBoostElement(nextClothing, 'clothing'));
-    }
+    [getNextBoost('equipment'), getNextBoost('advertising'), getNextBoost('clothing')].forEach(boost => {
+        if (boost) {
+            const boostElement = createBoostElement(boost);
+            container.appendChild(boostElement);
+        }
+    });
 }
 
 function getNextBoost(category) {
@@ -189,20 +161,22 @@ function getNextBoost(category) {
     
     for (let boost of allBoosts) {
         if (!purchased.includes(boost.id)) {
-            return boost;
+            return { ...boost, category };
         }
     }
     return null;
 }
 
-function createBoostElement(boost, category) {
+function createBoostElement(boostData) {
+    const { category, ...boost } = boostData;
     const canAfford = gameState.money >= boost.price;
     
     const boostElement = document.createElement('div');
     boostElement.className = `boost-item ${!canAfford ? 'cant-afford' : ''}`;
     
     if (canAfford) {
-        boostElement.onclick = () => buyBoost(category, boost.id);
+        boostElement.addEventListener('click', () => buyBoost(category, boost.id));
+        boostElement.addEventListener('touchstart', () => buyBoost(category, boost.id), { passive: true });
     }
     
     boostElement.innerHTML = `
@@ -238,21 +212,15 @@ function buyBoost(category, boostId) {
     saveGameState();
 }
 
-// ИСПРАВЛЕННАЯ ФУНКЦИЯ КАРТИНОК
+// Картинки оборудования
 function updateEquipmentImage() {
     const equipmentElement = document.getElementById('equipmentImage');
     if (!equipmentElement) return;
     
     const equipmentBoosts = gameState.boosts.equipment;
-    
     let currentImage = 'phone.png';
-    if (equipmentBoosts.includes("studio3")) currentImage = "studio3.png";
-    else if (equipmentBoosts.includes("studio2")) currentImage = "studio2.png";
-    else if (equipmentBoosts.includes("studio1")) currentImage = "studio1.png";
-    else if (equipmentBoosts.includes("advanced_gear")) currentImage = "advanced_gear.png";
-    else if (equipmentBoosts.includes("medium_gear")) currentImage = "medium_gear.png";
-    else if (equipmentBoosts.includes("basic_gear")) currentImage = "basic_gear.png";
-    else if (equipmentBoosts.includes("pro_mic")) currentImage = "pro_mic.png";
+    
+    if (equipmentBoosts.includes("pro_mic")) currentImage = "pro_mic.png";
     else if (equipmentBoosts.includes("usb_mic")) currentImage = "usb_mic.png";
     
     equipmentElement.style.backgroundImage = `url('images/equipment/${currentImage}')`;
@@ -275,23 +243,6 @@ function renderFits() {
             }
         });
     }
-    
-    gameState.purchasedFits.forEach(fitId => {
-        const fit = findFitById(fitId);
-        if (fit) {
-            const fitElement = createFitElement(fit);
-            container.appendChild(fitElement);
-        }
-    });
-}
-
-function findFitById(fitId) {
-    for (let level = 1; level <= 5; level++) {
-        const levelFits = fits[level] || [];
-        const fit = levelFits.find(f => f.id === fitId);
-        if (fit) return fit;
-    }
-    return null;
 }
 
 function createFitElement(fit) {
@@ -303,16 +254,9 @@ function createFitElement(fit) {
     const div = document.createElement('div');
     div.className = `fit-item ${isPurchased ? 'purchased' : ''} ${!canAfford && !isPurchased ? 'cant-afford' : ''}`;
     
-    let requirementsText = '';
-    if (isPurchased) {
-        requirementsText = `Доход: ${fit.effects.income}₽/час`;
-    } else {
-        if (hasEnoughCred) {
-            requirementsText = `Требуется: ${fit.requirements.streetCred}% трушности ✓`;
-        } else {
-            requirementsText = `Требуется: ${fit.requirements.streetCred}% трушности<br>Или купи за ${fit.requirements.price}₽`;
-        }
-    }
+    let requirementsText = isPurchased ? 
+        `Доход: ${fit.effects.income}₽/час` :
+        `Требуется: ${fit.requirements.streetCred}% трушности${hasEnoughCred ? ' ✓' : ''}`;
     
     const priceDisplay = isPurchased ? 'КУПЛЕНО' : (hasEnoughCred ? 'БЕСПЛАТНО' : `${actualPrice} ₽`);
     
@@ -325,14 +269,16 @@ function createFitElement(fit) {
     `;
     
     if (!isPurchased) {
-        div.querySelector('.buy-fit-btn').onclick = () => buyFit(fit.id, hasEnoughCred);
+        const button = div.querySelector('.buy-fit-btn');
+        button.addEventListener('click', () => buyFit(fit.id, hasEnoughCred));
+        button.addEventListener('touchstart', () => buyFit(fit.id, hasEnoughCred), { passive: true });
     }
     
     return div;
 }
 
 function buyFit(fitId, isFree) {
-    const fit = findFitById(fitId);
+    const fit = Object.values(fits).flat().find(f => f.id === fitId);
     if (!fit) return;
     
     const actualPrice = isFree ? 0 : fit.requirements.price;
@@ -389,34 +335,6 @@ function collectPassiveIncome() {
     }
 }
 
-// Фон и слои
-function updateBackgroundLayers() {
-    updateMoneyLayer();
-    updateLevelDetailLayer();
-}
-
-function updateMoneyLayer() {
-    const moneyLayer = document.getElementById('moneyLayer');
-    if (!moneyLayer) return;
-    
-    let moneyImage = 'money1.png';
-    const money = gameState.money;
-    
-    if (money >= 1000000) moneyImage = 'money4.png';
-    else if (money >= 100000) moneyImage = 'money3.png';
-    else if (money >= 10000) moneyImage = 'money2.png';
-    
-    moneyLayer.style.backgroundImage = `url('images/money/${moneyImage}')`;
-}
-
-function updateLevelDetailLayer() {
-    const detailLayer = document.getElementById('levelDetailLayer');
-    if (!detailLayer) return;
-    
-    const levelImage = `level${gameState.level}.png`;
-    detailLayer.style.backgroundImage = `url('images/level_details/${levelImage}')`;
-}
-
 // Вкладки
 function openTab(tabName) {
     document.querySelectorAll('.tab-panel').forEach(tab => {
@@ -449,8 +367,6 @@ function updateDisplay() {
     
     const totalPassiveIncome = gameState.passiveIncome.reduce((sum, income) => sum + income.income, 0);
     document.getElementById('passiveIncome').textContent = totalPassiveIncome.toLocaleString() + ' ₽/час';
-    
-    updateBackgroundLayers();
 }
 
 // Уведомления
