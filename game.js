@@ -1,4 +1,4 @@
-// game.js - ПОЛНОСТЬЮ ПЕРЕПИСАННЫЙ КОД
+// Инициализация Telegram Web App
 const tg = window.Telegram?.WebApp;
 
 // Игровое состояние
@@ -17,7 +17,7 @@ let gameState = {
     purchasedFits: [],
     passiveIncome: [],
     unlockedFits: [],
-    mainFitsSelected: [] // какие главные фиты уже выбраны
+    availableMainFits: [] // 3 главных фита для выбора на текущем уровне
 };
 
 // Уровни игры
@@ -29,7 +29,7 @@ const levels = [
     { name: "ЛЕГЕНДА", minFame: 500000, maxFame: 2000000, moneyReward: 80000 }
 ];
 
-// Система бустов - ВСЕ БУСТЫ ДОБАВЛЕНЫ
+// Полная система бустов
 const boosts = {
     equipment: [
         { id: "usb_mic", name: "USB микрофон", price: 500, effect: "+2 известности", famePerClick: 2 },
@@ -53,7 +53,7 @@ const boosts = {
     clothing: [
         { id: "shirt", name: "Школьная рубашка", price: 400, effect: "1.2x трушность", credMultiplier: 1.2 },
         { id: "campus", name: "Кампусы с мехом", price: 1800, effect: "1.5x трушность", credMultiplier: 1.5 },
-        { id: "ricki", name: "Рики с вб", price: 7000, effect: "2.0x трушность", credMultiplier: 2.0 },
+        { id: "ricky", name: "Рики с вб", price: 7000, effect: "2.0x трушность", credMultiplier: 2.0 },
         { id: "adidas", name: "Спорткостюм адидас", price: 22000, effect: "3.0x трушность", credMultiplier: 3.0 },
         { id: "phresh", name: "Авито phreshboyswag", price: 70000, effect: "5.0x трушность", credMultiplier: 5.0 },
         { id: "china", name: "Одежда с китая", price: 180000, effect: "8.0x трушность", credMultiplier: 8.0 },
@@ -63,54 +63,135 @@ const boosts = {
     ]
 };
 
-// ВСЕ ФИТЫ ПО УРОВНЯМ
+// ПОЛНАЯ СИСТЕМА ФИТОВ - 48 реперов
 const fits = {
-    1: {
-        main: [
-            { id: "h_vasya", name: "Вася одноклассник", image: "1/h_васяодноклассник.jpg", fame: 1000, credEffect: -30, income: 200, reqCred: 0, price: 0 },
-            { id: "h_carrystaff", name: "CarryStaff", image: "1/h_carrystaff.jpg", fame: 16000, credEffect: 30, income: 3200, reqCred: 20, price: 2000 },
-            { id: "h_kostyapetux123", name: "kostyapetux123", image: "1/h_kostyapetux123.jpg", fame: 4000, credEffect: 0, income: 800, reqCred: 0, price: 2000 }
-        ],
-        other: [
-            { id: "tipiztelegrama", name: "Тип из телеграма", image: "1/типизтелеграма.jpg", fame: 4000, credEffect: 0, income: 800, reqCred: 20, price: 0 },
-            { id: "plag", name: "Плаг", image: "1/плаг.jpg", fame: 16000, credEffect: 30, income: 3200, reqCred: 50, price: 4000 },
-            { id: "mladshiybrat", name: "Младший брат", image: "1/младшийбрат.jpg", fame: 16000, credEffect: -15, income: 1600, reqCred: 10, price: 8000 },
-            { id: "mama", name: "Мама", image: "1/мама.jpg", fame: 16000, credEffect: 30, income: 3200, reqCred: 0, price: 4000 },
-            { id: "neonova", name: "Неонова", image: "1/неонова.jpg", fame: 1000, credEffect: -30, income: 3200, reqCred: 30, price: 16000 }
-        ]
-    },
-    2: {
-        main: [
-            { id: "h_davidblunt", name: "David Blunt", image: "2/h_davidblunt.jpg", fame: 4000, credEffect: 15, income: 4000, reqCred: 50, price: 8000 },
-            { id: "h_macksonmadrid", name: "МаксонМадрид", image: "2/h_максонмадрид.jpg", fame: 8000, credEffect: -15, income: 2000, reqCred: 20, price: 2000 },
-            { id: "h_roadring", name: "Roadring", image: "2/h_roadring.jpg", fame: 2000, credEffect: 30, income: 4000, reqCred: 70, price: 4000 }
-        ],
-        other: [
-            { id: "lazerdim700", name: "LAZER DIM700", image: "2/lazerdim700.jpg", fame: 2000, credEffect: 15, income: 1000, reqCred: 60, price: 2000 },
-            { id: "kakoytohui", name: "Какой-то хуй", image: "2/какой-тохуй.jpg", fame: 1000, credEffect: -30, income: 500, reqCred: 0, price: 1000 },
-            { id: "800pts", name: "800pts", image: "2/800pts.jpg", fame: 1000, credEffect: 15, income: 2000, reqCred: 40, price: 4000 },
-            { id: "redda", name: "Redda", image: "2/redda.jpg", fame: 2000, credEffect: 0, income: 2000, reqCred: 30, price: 4000 },
-            { id: "feduk", name: "FEDUK", image: "2/feduk.jpg", fame: 16000, credEffect: -15, income: 8000, reqCred: 50, price: 16000 }
-        ]
-    },
-    3: {
-        main: [
-            { id: "h_temnyprints", name: "Темный Принц", image: "3/h_темныйпринц.jpg", fame: 16000, credEffect: -15, income: 4000, reqCred: 30, price: 8000 },
-            { id: "h_tuborosho", name: "tuborosho", image: "3/h_tuborosho.jpg", fame: 4000, credEffect: -15, income: 2000, reqCred: 60, price: 4000 },
-            { id: "h_babymelo", name: "Baby Melo", image: "3/h_babymelo.jpg", fame: 16000, credEffect: -30, income: 16000, reqCred: 0, price: 16000 }
-        ],
-        other: [
-            { id: "osamason", name: "osamason", image: "3/osamason.jpg", fame: 1000, credEffect: 0, income: 2000, reqCred: 20, price: 2000 },
-            { id: "xxxtentacion", name: "XXXTENTACION", image: "3/xxxtentacion.jpg", fame: 4000, credEffect: 15, income: 1000, reqCred: 10, price: 1000 },
-            { id: "meybibeybi", name: "Мейби Бейби", image: "3/мейбибейби.jpg", fame: 16000, credEffect: 30, income: 16000, reqCred: 90, price: 16000 },
-            { id: "flight", name: "Flight", image: "3/flight.jpg", fame: 1000, credEffect: -30, income: 1000, reqCred: 0, price: 0 },
-            { id: "phreshboyswag", name: "phreshboyswag", image: "3/phreshboyswag.jpg", fame: 4000, credEffect: 15, income: 16000, reqCred: 20, price: 4000 },
-            { id: "code10", name: "code10", image: "3/code10.jpg", fame: 8000, credEffect: 15, income: 4000, reqCred: 40, price: 2000 },
-            { id: "scallymilano", name: "Scally Milano", image: "3/scallymilano.jpg", fame: 16000, credEffect: -30, income: 16000, reqCred: 30, price: 8000 },
-            { id: "sematary", name: "Sematary", image: "3/sematary.jpg", fame: 2000, credEffect: 15, income: 2000, reqCred: 60, price: 2000 }
-        ]
-    }
-    // Уровни 4 и 5 тоже добавлю, но для экономии места пока 3 уровня
+    1: [
+        // Главные фиты уровня 1
+        { id: "vasya", name: "Вася одноклассник", image: "1/h_васяодноклассник.jpg", 
+          fame: 1, streetCredEffect: 2, income: 2, priceLevel: 0, requirements: { streetCred: 0 } },
+        { id: "carrystaff", name: "CarryStaff", image: "1/h_carrystaff.jpg",
+          fame: 5, streetCredEffect: 5, income: 5, priceLevel: 2, requirements: { streetCred: 20 } },
+        { id: "kostyapetux", name: "kostyapetux123", image: "1/h_kostyapetux123.jpg",
+          fame: 3, streetCredEffect: 3, income: 1, priceLevel: 2, requirements: { streetCred: 0 } },
+        
+        // Остальные фиты уровня 1
+        { id: "telegramguy", name: "Тип из телеграма", image: "1/типизтелеграма.jpg",
+          fame: 3, streetCredEffect: 3, income: 1, priceLevel: 0, requirements: { streetCred: 20 } },
+        { id: "plag", name: "Плаг", image: "1/плаг.jpg",
+          fame: 5, streetCredEffect: 5, income: 5, priceLevel: 3, requirements: { streetCred: 50 } },
+        { id: "brother", name: "Младший брат", image: "1/младшийбрат.jpg",
+          fame: 5, streetCredEffect: 3, income: 2, priceLevel: 4, requirements: { streetCred: 10 } },
+        { id: "mom", name: "Мама", image: "1/мама.jpg",
+          fame: 5, streetCredEffect: 5, income: 5, priceLevel: 3, requirements: { streetCred: 0 } },
+        { id: "neonova", name: "Неонова", image: "1/неонова.jpg",
+          fame: 1, streetCredEffect: 1, income: 4, priceLevel: 5, requirements: { streetCred: 30 } }
+    ],
+    
+    2: [
+        // Главные фиты уровня 2
+        { id: "davidblunt", name: "David Blunt", image: "2/h_davidblunt.jpg",
+          fame: 3, streetCredEffect: 4, income: 4, priceLevel: 4, requirements: { streetCred: 50 } },
+        { id: "maxonmadrid", name: "МаксонМадрид", image: "2/h_максонмадрид.jpg",
+          fame: 4, streetCredEffect: 3, income: 2, priceLevel: 2, requirements: { streetCred: 20 } },
+        { id: "roadring", name: "Roadring", image: "2/h_roadring.jpg",
+          fame: 2, streetCredEffect: 5, income: 4, priceLevel: 3, requirements: { streetCred: 70 } },
+        
+        // Остальные фиты уровня 2
+        { id: "lazerdim", name: "LAZER DIM700", image: "2/lazerdim700.jpg",
+          fame: 2, streetCredEffect: 4, income: 1, priceLevel: 2, requirements: { streetCred: 60 } },
+        { id: "randomguy", name: "Какой-то хуй", image: "2/какой-тохуй.jpg",
+          fame: 1, streetCredEffect: 1, income: 1, priceLevel: 1, requirements: { streetCred: 0 } },
+        { id: "eightpts", name: "800pts", image: "2/800pts.jpg",
+          fame: 1, streetCredEffect: 4, income: 3, priceLevel: 3, requirements: { streetCred: 40 } },
+        { id: "redda", name: "Redda", image: "2/redda.jpg",
+          fame: 2, streetCredEffect: 3, income: 3, priceLevel: 3, requirements: { streetCred: 30 } },
+        { id: "feduk", name: "FEDUK", image: "2/feduk.jpg",
+          fame: 5, streetCredEffect: 2, income: 5, priceLevel: 5, requirements: { streetCred: 50 } }
+    ],
+    
+    3: [
+        // Главные фиты уровня 3
+        { id: "darkprince", name: "Темный Принц", image: "3/h_темныйпринц.jpg",
+          fame: 5, streetCredEffect: 3, income: 4, priceLevel: 4, requirements: { streetCred: 30 } },
+        { id: "tuborosho", name: "tuborosho", image: "3/h_tuborosho.jpg",
+          fame: 3, streetCredEffect: 2, income: 2, priceLevel: 3, requirements: { streetCred: 60 } },
+        { id: "babymelo", name: "Baby Melo", image: "3/h_babymelo.jpg",
+          fame: 5, streetCredEffect: 1, income: 5, priceLevel: 5, requirements: { streetCred: 0 } },
+        
+        // Остальные фиты уровня 3
+        { id: "osamason", name: "osamason", image: "3/osamason.jpg",
+          fame: 1, streetCredEffect: 3, income: 2, priceLevel: 2, requirements: { streetCred: 20 } },
+        { id: "xxxtentacion", name: "XXXTENTACION", image: "3/xxxtentacion.jpg",
+          fame: 3, streetCredEffect: 4, income: 1, priceLevel: 1, requirements: { streetCred: 10 } },
+        { id: "maybe", name: "Мейби Бейби", image: "3/мейбибейби.jpg",
+          fame: 5, streetCredEffect: 5, income: 5, priceLevel: 5, requirements: { streetCred: 90 } },
+        { id: "flight", name: "Flight", image: "3/flight.jpg",
+          fame: 1, streetCredEffect: 1, income: 1, priceLevel: 0, requirements: { streetCred: 0 } },
+        { id: "phreshboyswag", name: "phreshboyswag", image: "3/phreshboyswag.jpg",
+          fame: 3, streetCredEffect: 4, income: 5, priceLevel: 3, requirements: { streetCred: 20 } },
+        { id: "code10", name: "code10", image: "3/code10.jpg",
+          fame: 4, streetCredEffect: 4, income: 4, priceLevel: 2, requirements: { streetCred: 40 } },
+        { id: "scally", name: "Scally Milano", image: "3/scallymilano.jpg",
+          fame: 5, streetCredEffect: 1, income: 5, priceLevel: 4, requirements: { streetCred: 30 } },
+        { id: "sematary", name: "Sematary", image: "3/sematary.jpg",
+          fame: 2, streetCredEffect: 4, income: 3, priceLevel: 2, requirements: { streetCred: 60 } }
+    ],
+    
+    4: [
+        // Главные фиты уровня 4
+        { id: "lildrughill", name: "LILDRUGHILL", image: "4/h_lildrughill.jpg",
+          fame: 4, streetCredEffect: 4, income: 5, priceLevel: 4, requirements: { streetCred: 70 } },
+        { id: "ogbuda", name: "OG Buda", image: "4/h_ogbuda.jpg",
+          fame: 5, streetCredEffect: 2, income: 5, priceLevel: 5, requirements: { streetCred: 10 } },
+        { id: "aarne", name: "Aarne", image: "4/h_aarne.jpg",
+          fame: 1, streetCredEffect: 1, income: 1, priceLevel: 5, requirements: { streetCred: 0 } },
+        
+        // Остальные фиты уровня 4
+        { id: "friendlythug", name: "FRIENDLY THUG 52 NGG", image: "4/friendlythug52ngg.jpg",
+          fame: 4, streetCredEffect: 3, income: 4, priceLevel: 4, requirements: { streetCred: 60 } },
+        { id: "thrillpill", name: "THRILL PILL", image: "4/thrillpill.jpg",
+          fame: 2, streetCredEffect: 5, income: 3, priceLevel: 3, requirements: { streetCred: 70 } },
+        { id: "kizaru", name: "kizaru", image: "4/kizaru.jpg",
+          fame: 4, streetCredEffect: 2, income: 5, priceLevel: 0, requirements: { streetCred: 100 } },
+        { id: "kencarson", name: "Ken Carson", image: "4/kencarson.jpg",
+          fame: 3, streetCredEffect: 4, income: 2, priceLevel: 4, requirements: { streetCred: 40 } },
+        { id: "ninemice", name: "9mice", image: "4/9mice.jpg",
+          fame: 5, streetCredEffect: 3, income: 5, priceLevel: 5, requirements: { streetCred: 70 } },
+        { id: "kaiangel", name: "Kai Angel", image: "4/kaiangel.jpg",
+          fame: 4, streetCredEffect: 5, income: 4, priceLevel: 4, requirements: { streetCred: 80 } },
+        { id: "platina", name: "Платина", image: "4/платина.jpg",
+          fame: 2, streetCredEffect: 4, income: 4, priceLevel: 3, requirements: { streetCred: 40 } },
+        { id: "toxis", name: "Toxis", image: "4/toxis.jpg",
+          fame: 5, streetCredEffect: 1, income: 5, priceLevel: 5, requirements: { streetCred: 20 } },
+        { id: "fendiglock", name: "FENDIGLOCK", image: "4/fendiglock.jpg",
+          fame: 2, streetCredEffect: 3, income: 2, priceLevel: 2, requirements: { streetCred: 30 } },
+        { id: "obladaet", name: "OBLADAET", image: "4/obladaet.jpg",
+          fame: 4, streetCredEffect: 1, income: 3, priceLevel: 3, requirements: { streetCred: 50 } },
+        { id: "icegergert", name: "ICEGERGERT", image: "4/icegergert.jpg",
+          fame: 5, streetCredEffect: 1, income: 5, priceLevel: 5, requirements: { streetCred: 60 } }
+    ],
+    
+    5: [
+        // Главные фиты уровня 5
+        { id: "morgenshtern", name: "MORGENSHTERN", image: "5/h_morgenshtern.jpg",
+          fame: 5, streetCredEffect: 5, income: 5, priceLevel: 5, requirements: { streetCred: 70 } },
+        { id: "arut", name: "Arut", image: "5/h_arut.jpg",
+          fame: 2, streetCredEffect: 1, income: 1, priceLevel: 4, requirements: { streetCred: 10 } },
+        { id: "litvin", name: "ЛИТВИН", image: "5/h_литвин.jpg",
+          fame: 4, streetCredEffect: 2, income: 3, priceLevel: 4, requirements: { streetCred: 30 } },
+        
+        // Остальные фиты уровня 5
+        { id: "kirkorov", name: "Филипп Киркоров", image: "5/филиппкиркоров.jpg",
+          fame: 2, streetCredEffect: 1, income: 4, priceLevel: 5, requirements: { streetCred: 30 } },
+        { id: "yungtrappa", name: "Yung Trappa", image: "5/yungtrappa.jpg",
+          fame: 3, streetCredEffect: 4, income: 2, priceLevel: 4, requirements: { streetCred: 80 } },
+        { id: "yeat", name: "Yeat", image: "5/yeat.jpg",
+          fame: 5, streetCredEffect: 3, income: 5, priceLevel: 2, requirements: { streetCred: 50 } },
+        { id: "playboicarti", name: "Playboi Carti", image: "5/playboicarti.jpg",
+          fame: 4, streetCredEffect: 4, income: 4, priceLevel: 4, requirements: { streetCred: 70 } },
+        { id: "kanyewest", name: "Kanye West", image: "5/kanyewest.jpg",
+          fame: 3, streetCredEffect: 5, income: 5, priceLevel: 5, requirements: { streetCred: 90 } }
+    ]
 };
 
 // Основные функции игры
@@ -123,6 +204,7 @@ function initGame() {
     renderFits();
     startPassiveIncome();
     updateEquipmentImage();
+    selectMainFitsForLevel();
 }
 
 function initTelegram() {
@@ -132,7 +214,7 @@ function initTelegram() {
     }
 }
 
-// ИСПРАВЛЕННЫЕ ОБРАБОТЧИКИ
+// Обработчики событий
 function setupEventListeners() {
     const clickArea = document.getElementById('clickArea');
     if (clickArea) {
@@ -161,10 +243,9 @@ function handleTabClick(e) {
 function clickSound() {
     let fameGain = 1;
     
-    // Считаем бонус от оборудования
     gameState.boosts.equipment.forEach(boostId => {
         const boost = boosts.equipment.find(b => b.id === boostId);
-        if (boost) fameGain = Math.max(fameGain, boost.famePerClick);
+        if (boost) fameGain = boost.famePerClick;
     });
     
     gameState.fame += fameGain;
@@ -182,40 +263,58 @@ function checkLevelUp() {
         const newLevel = levels[gameState.level - 1];
         gameState.money += newLevel.moneyReward;
         
-        showMessage('НОВЫЙ УРОВЕНЬ: ' + newLevel.name + '! +' + newLevel.moneyReward + '₽');
+        unlockFitsForLevel(gameState.level);
+        selectMainFitsForLevel();
+        
+        showMessage('НОВЫЙ УРОВЕНЬ: ' + newLevel.name);
         updateDisplay();
         renderFits();
         saveGameState();
     }
 }
 
-// СИСТЕМА БУСТОВ - ИСПРАВЛЕНА
+// ВЫБОР 3 ГЛАВНЫХ ФИТОВ ДЛЯ УРОВНЯ
+function selectMainFitsForLevel() {
+    const levelFits = fits[gameState.level] || [];
+    const mainFits = levelFits.filter(fit => fit.image.includes('/h_'));
+    
+    // Выбираем случайные 3 главных фита
+    const shuffled = [...mainFits].sort(() => 0.5 - Math.random());
+    gameState.availableMainFits = shuffled.slice(0, 3);
+    
+    // Добавляем их в unlockedFits
+    gameState.availableMainFits.forEach(fit => {
+        if (!gameState.unlockedFits.includes(fit.id)) {
+            gameState.unlockedFits.push(fit.id);
+        }
+    });
+}
+
+function unlockFitsForLevel(level) {
+    const levelFits = fits[level] || [];
+    levelFits.forEach(fit => {
+        if (!gameState.unlockedFits.includes(fit.id)) {
+            gameState.unlockedFits.push(fit.id);
+        }
+    });
+}
+
+// Система бустов
 function renderBoosts() {
     const container = document.getElementById('boostList');
     if (!container) return;
     
     container.innerHTML = '';
     
-    // Показываем по 1 следующему бусту из каждой категории
-    ['equipment', 'advertising', 'clothing'].forEach(category => {
-        const nextBoost = getNextBoost(category);
-        if (nextBoost) {
-            const boostElement = createBoostElement(nextBoost);
-            container.appendChild(boostElement);
-        }
+    // Показываем все доступные бусты
+    Object.keys(boosts).forEach(category => {
+        boosts[category].forEach(boost => {
+            if (!gameState.boosts[category].includes(boost.id)) {
+                const boostElement = createBoostElement({...boost, category});
+                container.appendChild(boostElement);
+            }
+        });
     });
-}
-
-function getNextBoost(category) {
-    const purchased = gameState.boosts[category];
-    const allBoosts = boosts[category];
-    
-    for (let boost of allBoosts) {
-        if (!purchased.includes(boost.id)) {
-            return { ...boost, category };
-        }
-    }
-    return null;
 }
 
 function createBoostElement(boostData) {
@@ -263,7 +362,7 @@ function buyBoost(category, boostId) {
     saveGameState();
 }
 
-// КАРТИНКИ ОБОРУДОВАНИЯ
+// Картинки оборудования
 function updateEquipmentImage() {
     const equipmentElement = document.getElementById('equipmentImage');
     if (!equipmentElement) return;
@@ -275,7 +374,7 @@ function updateEquipmentImage() {
     const equipmentOrder = ['studio3', 'studio2', 'studio1', 'advanced_gear', 'medium_gear', 'basic_gear', 'pro_mic', 'usb_mic'];
     for (let equip of equipmentOrder) {
         if (equipmentBoosts.includes(equip)) {
-            currentImage = equip + '.png';
+            currentImage = `${equip}.png`;
             break;
         }
     }
@@ -283,116 +382,87 @@ function updateEquipmentImage() {
     equipmentElement.style.backgroundImage = `url('images/equipment/${currentImage}')`;
 }
 
-// СИСТЕМА ФИТОВ - ПОЛНОСТЬЮ ПЕРЕПИСАНА
+// СИСТЕМА ФИТОВ
 function renderFits() {
     const container = document.getElementById('fitsContainer');
     if (!container) return;
     
     container.innerHTML = '';
     
-    // Главные фиты текущего уровня (если еще не выбраны)
-    const currentLevelFits = fits[gameState.level];
-    if (currentLevelFits && !gameState.mainFitsSelected.includes(gameState.level)) {
-        renderMainFits(container, currentLevelFits.main);
-    }
-    
-    // Все доступные фиты (главные из пройденных уровней + остальные)
-    renderAllFits(container);
-}
-
-function renderMainFits(container, mainFits) {
-    const mainSection = document.createElement('div');
-    mainSection.innerHTML = '<div style="color: #00d4ff; font-weight: bold; margin-bottom: 10px;">ВЫБЕРИ ГЛАВНЫЙ ФИТ:</div>';
-    
-    mainFits.forEach(fit => {
-        if (!gameState.purchasedFits.includes(fit.id)) {
-            const fitElement = createMainFitElement(fit);
-            mainSection.appendChild(fitElement);
-        }
-    });
-    
-    container.appendChild(mainSection);
-}
-
-function createMainFitElement(fit) {
-    const div = document.createElement('div');
-    div.className = 'fit-item';
-    div.style.border = '2px solid #00d4ff';
-    
-    div.innerHTML = `
-        <div class="fit-image" style="background-image: url('images/rappers/${fit.image}')"></div>
-        <div class="fit-name" style="color: #00d4ff">${fit.name}</div>
-        <div class="fit-requirements">+${fit.fame} известности</div>
-        <div class="fit-requirements">${fit.credEffect > 0 ? '+' : ''}${fit.credEffect}% трушности</div>
-        <div class="fit-requirements">${fit.income}₽/час</div>
-        <button class="buy-fit-btn" style="background: #00d4ff">ВЫБРАТЬ ФИТ</button>
-    `;
-    
-    const button = div.querySelector('.buy-fit-btn');
-    button.addEventListener('click', () => selectMainFit(fit));
-    button.addEventListener('touchstart', () => selectMainFit(fit), { passive: true });
-    
-    return div;
-}
-
-function selectMainFit(fit) {
-    // Отмечаем что выбрали главный фит для этого уровня
-    if (!gameState.mainFitsSelected.includes(gameState.level)) {
-        gameState.mainFitsSelected.push(gameState.level);
-    }
-    
-    // Применяем эффекты фита
-    applyFitEffects(fit);
-    
-    showMessage("Выбран фит: " + fit.name);
-    updateDisplay();
-    renderFits();
-    saveGameState();
-}
-
-function renderAllFits(container) {
-    const otherSection = document.createElement('div');
-    otherSection.innerHTML = '<div style="color: #ff9900; font-weight: bold; margin: 20px 0 10px 0;">ОСТАЛЬНЫЕ ФИТЫ:</div>';
-    
-    // Собираем все доступные фиты со всех уровней
-    for (let level = 1; level <= gameState.level; level++) {
-        const levelFits = fits[level];
-        if (!levelFits) continue;
+    // Показываем главные фиты для выбора
+    if (gameState.availableMainFits.length > 0) {
+        const mainFitsSection = document.createElement('div');
+        mainFitsSection.innerHTML = '<div style="text-align: center; margin-bottom: 15px; color: #00d4ff; font-weight: bold;">ВЫБЕРИ ФИТ:</div>';
         
-        // Главные фиты из пройденных уровней (которые не выбраны как главные)
-        if (level < gameState.level || gameState.mainFitsSelected.includes(level)) {
-            levelFits.main.forEach(fit => {
-                if (!gameState.purchasedFits.includes(fit.id)) {
-                    const fitElement = createFitElement(fit);
-                    otherSection.appendChild(fitElement);
-                }
-            });
-        }
-        
-        // Остальные фиты
-        levelFits.other.forEach(fit => {
+        gameState.availableMainFits.forEach(fit => {
             if (!gameState.purchasedFits.includes(fit.id)) {
-                const fitElement = createFitElement(fit);
-                otherSection.appendChild(fitElement);
+                const fitElement = createFitElement(fit, true);
+                mainFitsSection.appendChild(fitElement);
+            }
+        });
+        
+        container.appendChild(mainFitsSection);
+    }
+    
+    // Показываем остальные доступные фиты
+    const otherFits = [];
+    for (let level = 1; level <= gameState.level; level++) {
+        const levelFits = fits[level] || [];
+        levelFits.forEach(fit => {
+            if (gameState.unlockedFits.includes(fit.id) && 
+                !gameState.purchasedFits.includes(fit.id) &&
+                !gameState.availableMainFits.includes(fit)) {
+                otherFits.push(fit);
             }
         });
     }
     
-    container.appendChild(otherSection);
+    if (otherFits.length > 0) {
+        const otherSection = document.createElement('div');
+        otherSection.innerHTML = '<div style="text-align: center; margin: 20px 0 15px 0; color: #00d4ff; font-weight: bold;">ДРУГИЕ ФИТЫ:</div>';
+        
+        otherFits.forEach(fit => {
+            const fitElement = createFitElement(fit, false);
+            otherSection.appendChild(fitElement);
+        });
+        
+        container.appendChild(otherSection);
+    }
 }
 
-function createFitElement(fit) {
+function createFitElement(fit, isMain) {
     const isPurchased = gameState.purchasedFits.includes(fit.id);
-    const hasEnoughCred = gameState.streetCred >= fit.reqCred;
-    const actualPrice = hasEnoughCred ? 0 : fit.price;
-    const canAfford = gameState.money >= actualPrice || hasEnoughCred;
+    const hasEnoughCred = gameState.streetCred >= fit.requirements.streetCred;
+    
+    // Расчет цен и эффектов
+    const priceMap = {0: 0, 1: 1000, 2: 2000, 3: 4000, 4: 8000, 5: 16000};
+    const fameMap = {1: 1000, 2: 2000, 3: 4000, 4: 8000, 5: 16000};
+    const incomeMap = {
+        1: {1: 200, 2: 400, 3: 800, 4: 1600, 5: 3200},
+        2: {1: 500, 2: 1000, 3: 2000, 4: 4000, 5: 8000},
+        3: {1: 1000, 2: 2000, 3: 4000, 4: 8000, 5: 16000},
+        4: {1: 2000, 2: 4000, 3: 8000, 4: 16000, 5: 32000},
+        5: {1: 4000, 2: 8000, 3: 16000, 4: 32000, 5: 64000}
+    };
+    
+    const actualPrice = hasEnoughCred ? 0 : priceMap[fit.priceLevel];
+    const fameReward = fameMap[fit.fame];
+    const incomePerHour = incomeMap[gameState.level][fit.income];
+    const streetCredChange = (fit.streetCredEffect - 3) * 15;
+    
+    const canAfford = gameState.money >= actualPrice;
     
     const div = document.createElement('div');
-    div.className = `fit-item ${isPurchased ? 'purchased' : ''} ${!canAfford && !isPurchased ? 'cant-afford' : ''}`;
+    div.className = `fit-item ${isPurchased ? 'purchased' : ''} ${!canAfford && !isPurchased ? 'cant-afford' : ''} ${isMain ? 'main-fit' : ''}`;
+    
+    if (isMain) {
+        div.style.border = '2px solid gold';
+        div.style.background = 'rgba(255,215,0,0.1)';
+    }
     
     let requirementsText = isPurchased ? 
-        `Доход: ${fit.income}₽/час` :
-        `Требуется: ${fit.reqCred}% трушности${hasEnoughCred ? ' ✓' : ''}`;
+        `Доход: ${incomePerHour}₽/час` :
+        `Требуется: ${fit.requirements.streetCred}% трушности${hasEnoughCred ? ' ✓' : ''}`;
     
     const priceDisplay = isPurchased ? 'КУПЛЕНО' : (hasEnoughCred ? 'БЕСПЛАТНО' : `${actualPrice} ₽`);
     
@@ -406,52 +476,45 @@ function createFitElement(fit) {
     
     if (!isPurchased) {
         const button = div.querySelector('.buy-fit-btn');
-        if (canAfford) {
-            button.addEventListener('click', () => buyFit(fit, hasEnoughCred));
-            button.addEventListener('touchstart', () => buyFit(fit, hasEnoughCred), { passive: true });
-        }
+        button.addEventListener('click', () => buyFit(fit.id, hasEnoughCred, actualPrice, fameReward, incomePerHour, streetCredChange));
+        button.addEventListener('touchstart', () => buyFit(fit.id, hasEnoughCred, actualPrice, fameReward, incomePerHour, streetCredChange), { passive: true });
     }
     
     return div;
 }
 
-function buyFit(fit, isFree) {
-    const actualPrice = isFree ? 0 : fit.price;
-    
-    if (!isFree && gameState.money < actualPrice) {
+function buyFit(fitId, isFree, price, fameReward, incomePerHour, streetCredChange) {
+    if (!isFree && gameState.money < price) {
         showMessage("Недостаточно денег!");
         return;
     }
     
     if (!isFree) {
-        gameState.money -= actualPrice;
+        gameState.money -= price;
     }
     
-    applyFitEffects(fit);
+    gameState.purchasedFits.push(fitId);
+    gameState.fame += fameReward;
+    gameState.streetCred = Math.max(0, Math.min(100, gameState.streetCred + streetCredChange));
     
-    showMessage("Фит с " + fit.name + " записан!" + (isFree ? ' (Бесплатно)' : ` (-${actualPrice}₽)`));
+    // Убираем из доступных главных фитов
+    gameState.availableMainFits = gameState.availableMainFits.filter(fit => fit.id !== fitId);
+    
+    gameState.passiveIncome.push({
+        fitId: fitId,
+        income: incomePerHour,
+        lastCollection: Date.now()
+    });
+    
+    showMessage("Фит с " + Object.values(fits).flat().find(f => f.id === fitId).name + " записан!" + (isFree ? ' (Бесплатно)' : ''));
     updateDisplay();
     renderFits();
     saveGameState();
 }
 
-function applyFitEffects(fit) {
-    gameState.purchasedFits.push(fit.id);
-    gameState.fame += fit.fame;
-    gameState.streetCred = Math.max(0, Math.min(100, gameState.streetCred + fit.credEffect));
-    
-    gameState.passiveIncome.push({
-        fitId: fit.id,
-        income: fit.income,
-        lastCollection: Date.now()
-    });
-    
-    checkLevelUp();
-}
-
-// ПАССИВНЫЙ ДОХОД
+// Пассивный доход
 function startPassiveIncome() {
-    setInterval(collectPassiveIncome, 60000); // Каждую минуту
+    setInterval(collectPassiveIncome, 60000); // Каждую минуту проверяем
 }
 
 function collectPassiveIncome() {
@@ -463,7 +526,7 @@ function collectPassiveIncome() {
         if (hoursPassed >= 1) {
             const incomeAmount = Math.floor(hoursPassed) * income.income;
             totalIncome += incomeAmount;
-            income.lastCollection = now;
+            income.lastCollection = now - (hoursPassed - Math.floor(hoursPassed)) * (1000 * 60 * 60); // Сохраняем остаток
         }
     });
     
@@ -474,7 +537,7 @@ function collectPassiveIncome() {
     }
 }
 
-// ВКЛАДКИ
+// Вкладки
 function openTab(tabName) {
     document.querySelectorAll('.tab-panel').forEach(tab => {
         tab.classList.remove('active');
@@ -484,21 +547,18 @@ function openTab(tabName) {
         button.classList.remove('active');
     });
     
-    const targetTab = document.getElementById(tabName);
-    const targetButton = document.querySelector(`[data-tab="${tabName}"]`);
-    
-    if (targetTab) targetTab.classList.add('active');
-    if (targetButton) targetButton.classList.add('active');
+    document.getElementById(tabName).classList.add('active');
+    document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
 }
 
-// ОБНОВЛЕНИЕ ИНТЕРФЕЙСА
+// Обновление интерфейса
 function updateDisplay() {
     const currentLevel = levels[gameState.level - 1];
     
     document.getElementById('levelBadge').textContent = currentLevel.name;
-    document.getElementById('fameDisplay').textContent = Math.floor(gameState.fame).toLocaleString();
-    document.getElementById('moneyValue').textContent = Math.floor(gameState.money).toLocaleString() + ' ₽';
-    document.getElementById('credValue').textContent = Math.floor(gameState.streetCred) + '%';
+    document.getElementById('fameDisplay').textContent = gameState.fame.toLocaleString();
+    document.getElementById('moneyValue').textContent = gameState.money.toLocaleString() + ' ₽';
+    document.getElementById('credValue').textContent = gameState.streetCred + '%';
     
     document.getElementById('statsLevel').textContent = currentLevel.name;
     document.getElementById('totalTracks').textContent = gameState.totalTracks;
@@ -511,7 +571,7 @@ function updateDisplay() {
     document.getElementById('passiveIncome').textContent = totalPassiveIncome.toLocaleString() + ' ₽/час';
 }
 
-// УВЕДОМЛЕНИЯ
+// Уведомления
 function showMessage(text) {
     const notification = document.createElement('div');
     notification.className = 'notification';
@@ -525,7 +585,7 @@ function showMessage(text) {
     }, 3000);
 }
 
-// СОХРАНЕНИЕ ИГРЫ
+// Сохранение игры
 function saveGameState() {
     localStorage.setItem('rapperClickerSave', JSON.stringify(gameState));
 }
@@ -535,8 +595,17 @@ function loadGameState() {
     if (saved) {
         const loaded = JSON.parse(saved);
         gameState = { ...gameState, ...loaded };
+        
+        for (let level = 1; level <= gameState.level; level++) {
+            unlockFitsForLevel(level);
+        }
+        
+        // Если нет доступных главных фитов, выбираем их
+        if (gameState.availableMainFits.length === 0) {
+            selectMainFitsForLevel();
+        }
     }
 }
 
-// ЗАПУСК ИГРЫ
+// Запуск игры
 document.addEventListener('DOMContentLoaded', initGame);
